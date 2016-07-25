@@ -82,6 +82,6 @@ public class PreDealCheckerStepDefinitions {
     @Then("^I should finish within (.*)$")
     public void then_I_Should_Finish_Within(int secondsToExecute) throws Throwable {
         long difference = (System.currentTimeMillis() - startTimestamp) / 1000; //ms to seconds
-        assertTrue(difference <= secondsToExecute);
+        assertTrue("Actual difference:"+difference + " whereas expected secondsToExecute:" + secondsToExecute, difference <= secondsToExecute);
     }
 }
