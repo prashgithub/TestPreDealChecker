@@ -1,25 +1,32 @@
 package com.scb.gmr.bdd;
 
+import com.google.common.eventbus.EventBus;
 import com.scb.gmr.CounterPartyLimits;
 import com.scb.gmr.CounterPartyTradeBean;
-import com.scb.gmr.PreDealCheckerNew;
+import com.scb.gmr.PreDealChecker;
+import com.scb.gmr.util.EventBusConfigurer;
+import com.scb.gmr.eventhandler.PreDealCheckerEventHandler;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class PreDealCheckerStepDefinitions {
-    //static to preserve state between scenario examples
-    private final static PreDealCheckerNew DEAL_CHECKER_SCENE_1 = PreDealCheckerNew.create();
-    private final static PreDealCheckerNew DEAL_CHECKER_SCENE_2 = PreDealCheckerNew.create();
+    private static final EventBus EVENT_BUS = EventBusConfigurer
+            .configure()
+            .with(PreDealCheckerEventHandler.create(false))
+            .create();
 
-    //instance variables get reset with every scenario examples
-    private PreDealCheckerNew dealChecker;
+    //static to preserve state between scenario examples
+    private final static PreDealChecker DEAL_CHECKER_1 = PreDealChecker.create(EVENT_BUS);
+    private final static PreDealChecker DEAL_CHECKER_2 = PreDealChecker.create(EVENT_BUS);
+
+    //instance variables configure reset with every scenario examples
+    private PreDealChecker dealChecker;
     private CounterPartyLimits.Builder cpLimitsBuilder = CounterPartyLimits.builder();
     private long startTimestamp;
 
@@ -40,13 +47,13 @@ public class PreDealCheckerStepDefinitions {
 
     @When("^I place the order for (.*) with a (.*)$")
     public void when_I_Place_the_Following_Order(String counterParty, int notional) throws Throwable {
-        switchDealChecker(DEAL_CHECKER_SCENE_1);
+        switchDealChecker(DEAL_CHECKER_1);
         dealChecker.handle(counterParty, notional);
     }
 
     @When("^I execute (.*) for (.*) with a (.*)$")
     public void when_I_Execute_the_Following_Order(int numberOfExecutions, final String counterParty, final int notional) throws Throwable {
-        switchDealChecker(DEAL_CHECKER_SCENE_2);
+        switchDealChecker(DEAL_CHECKER_2);
 
         if(startTimestamp == 0){
             startTimestamp = System.currentTimeMillis();
@@ -56,7 +63,7 @@ public class PreDealCheckerStepDefinitions {
         }
     }
 
-    private void switchDealChecker(PreDealCheckerNew scenario) {
+    private void switchDealChecker(PreDealChecker scenario) {
         if(dealChecker != scenario){
             dealChecker = scenario;
         }

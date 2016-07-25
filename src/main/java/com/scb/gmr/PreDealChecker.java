@@ -1,30 +1,32 @@
 package com.scb.gmr;
 
 import CreditCheckAPI.PreDealListener;
-import com.scb.gmr.event.CounterPartyNotConfigured;
-import com.scb.gmr.event.DailyTradeLimitReached;
-import com.scb.gmr.event.PreAuthTradeAmountBreached;
-import com.scb.gmr.event.TradeRejectedForDailyLimit;
+import com.google.common.eventbus.EventBus;
+import com.scb.gmr.event.*;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.scb.gmr.event.EventBuses.*;
-
-public class PreDealCheckerNew implements PreDealListener {
+public class PreDealChecker implements PreDealListener {
     private final ConcurrentHashMap<String, CounterPartyTradeBean> counterPartyTradeBeanMap
             = new ConcurrentHashMap<>(); //initial capacity not predictable here, imp to avoid rehashing
 
-    private PreDealCheckerNew(CounterPartyLimits... limits) {
+    private final EventBus dealCheckerEventBus;
+
+    private PreDealChecker(EventBus eventBus, CounterPartyLimits... limits) {
+        dealCheckerEventBus = eventBus;
         for (CounterPartyLimits cp : limits) {
             addBean(cp);
         }
     }
-    public static PreDealCheckerNew create(CounterPartyLimits... limits) {
-        return new PreDealCheckerNew(limits);
+
+    public static PreDealChecker create(EventBus eventBus, CounterPartyLimits... limits) {
+        return new PreDealChecker(eventBus, limits);
     }
+
     public CounterPartyTradeBean getBeanFor(String counterParty) {
         return counterPartyTradeBeanMap.get(counterParty);
     }
+
     public CounterPartyTradeBean getOrCreateBeanFor(CounterPartyLimits limits) {
         CounterPartyTradeBean bean = getBeanFor(limits.getCounterParty());
         if(bean == null){
@@ -32,6 +34,7 @@ public class PreDealCheckerNew implements PreDealListener {
         }
         return bean;
     }
+
     private CounterPartyTradeBean addBean(CounterPartyLimits cp) {
         CounterPartyTradeBean newBean = new CounterPartyTradeBean(cp);
         CounterPartyTradeBean oldBeanOrNull = counterPartyTradeBeanMap.putIfAbsent(cp.getCounterParty(), newBean);
@@ -47,18 +50,18 @@ public class PreDealCheckerNew implements PreDealListener {
         final CounterPartyTradeBean bean = getBeanFor(counterParty);
 
         if (bean == null) {
-            DEAL_CHECKER_BUS.publish(CounterPartyNotConfigured.create(counterParty));
+            dealCheckerEventBus.post(CounterPartyNotConfigured.create(counterParty));
             return;
         }
         if (bean.isDailyLimitReached()) {
-            DEAL_CHECKER_BUS.publish(DailyTradeLimitReached.create(counterParty));
+            dealCheckerEventBus.post(DailyTradeLimitReached.create(counterParty));
             return;
         }
         if (!bean.isTradeAmountUnderPreAuthTradeLimit(tradeAmount)) {
-            DEAL_CHECKER_BUS.publish(PreAuthTradeAmountBreached.create(counterParty, tradeAmount));
+            dealCheckerEventBus.post(PreAuthTradeAmountBreached.create(counterParty, tradeAmount));
         }
         if (!bean.addTradeAmountIfUnderDailyTradeLimit(tradeAmount)) {
-            DEAL_CHECKER_BUS.publish(TradeRejectedForDailyLimit.create(counterParty, tradeAmount));
+            dealCheckerEventBus.post(TradeRejectedForDailyLimit.create(counterParty, tradeAmount));
         }
     }
 }

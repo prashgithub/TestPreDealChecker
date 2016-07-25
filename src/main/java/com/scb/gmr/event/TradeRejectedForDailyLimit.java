@@ -3,7 +3,7 @@ package com.scb.gmr.event;
 /**
  * Created by root on 22/7/16.
  */
-public class TradeRejectedForDailyLimit implements CounterPartyEvent {
+public class TradeRejectedForDailyLimit implements PreDealCheckerEvent {
     private final String counterParty;
     private final int tradeAmount;
 

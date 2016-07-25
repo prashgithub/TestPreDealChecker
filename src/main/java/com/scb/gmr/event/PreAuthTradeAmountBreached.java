@@ -3,7 +3,7 @@ package com.scb.gmr.event;
 /**
  * Created by root on 22/7/16.
  */
-public class PreAuthTradeAmountBreached implements CounterPartyEvent {
+public class PreAuthTradeAmountBreached implements PreDealCheckerEvent {
     private final String counterParty;
     private final int tradeAmount;
 
