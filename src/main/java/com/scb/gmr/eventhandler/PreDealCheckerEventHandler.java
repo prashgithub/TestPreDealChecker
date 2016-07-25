@@ -12,26 +12,20 @@ import com.scb.gmr.event.TradeRejectedForDailyLimit;
  * Created by root on 22/7/16.
  */
 public class PreDealCheckerEventHandler {
-//    private static final Logger LOGGER = Logger.getLogger(PreDealCheckerEventHandler.class.getSimpleName());
-
     private static final CreditLimitBreach CREDIT_LIMIT_BREACH = (counterParty, tradeAmount) -> {
         throw new CreditCheckException("CreditLimitBreach for counterParty:" + counterParty
                 + ", amount:" + tradeAmount);
     };
-
-    public static PreDealCheckerEventHandler create(){
-        return create(true);
-    }
     public static PreDealCheckerEventHandler create(boolean logEnable){
         return new PreDealCheckerEventHandler(logEnable);
     }
-    private final boolean logEnable;
-    private PreDealCheckerEventHandler(boolean logEnable){
-        this.logEnable = logEnable;
+    private final boolean logEnabled;
+    private PreDealCheckerEventHandler(boolean logEnabled){
+        this.logEnabled = logEnabled;
     }
 
     private void logMsg(String msg) {
-        if(logEnable) System.out.println(msg);
+        if(logEnabled) System.out.println(msg);
     }
     @Subscribe
     public void counterPartyNotConfigured(CounterPartyNotConfigured event){

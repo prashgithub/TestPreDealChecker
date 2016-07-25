@@ -1,20 +1,16 @@
 package com.scb.gmr.bdd;
 
-import CreditCheckAPI.CreditCheckException;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.SubscriberExceptionHandler;
-import com.scb.gmr.bdd.TestUtil;
 import com.scb.gmr.event.PreAuthTradeAmountBreached;
 import com.scb.gmr.eventhandler.PreDealCheckerEventHandler;
 import com.scb.gmr.util.EventBusConfigurer;
-import org.hamcrest.core.Is;
-import org.hamcrest.core.IsEqual;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.scb.gmr.bdd.TestUtil.*;
+import static com.scb.gmr.bdd.TestUtil.COUNTERPARTY;
+import static com.scb.gmr.bdd.TestUtil.DAILY_LIMIT;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 

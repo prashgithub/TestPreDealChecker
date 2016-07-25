@@ -2,13 +2,16 @@ package com.scb.gmr;
 
 import CreditCheckAPI.PreDealListener;
 import com.google.common.eventbus.EventBus;
-import com.scb.gmr.event.*;
+import com.scb.gmr.event.CounterPartyNotConfigured;
+import com.scb.gmr.event.DailyTradeLimitReached;
+import com.scb.gmr.event.PreAuthTradeAmountBreached;
+import com.scb.gmr.event.TradeRejectedForDailyLimit;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PreDealChecker implements PreDealListener {
     private final ConcurrentHashMap<String, CounterPartyTradeBean> counterPartyTradeBeanMap
-            = new ConcurrentHashMap<>(); //initial capacity not predictable here, imp to avoid rehashing
+            = new ConcurrentHashMap<>(); //if init cap predictable, provide here to avoid rehashing
 
     private final EventBus dealCheckerEventBus;
 
