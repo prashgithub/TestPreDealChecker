@@ -4,15 +4,13 @@ import com.google.common.eventbus.EventBus;
 import com.scb.gmr.CounterPartyLimits;
 import com.scb.gmr.CounterPartyTradeBean;
 import com.scb.gmr.PreDealChecker;
-import com.scb.gmr.util.EventBusConfigurer;
 import com.scb.gmr.eventhandler.PreDealCheckerEventHandler;
+import com.scb.gmr.util.EventBusConfigurer;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class PreDealCheckerStepDefinitions {
